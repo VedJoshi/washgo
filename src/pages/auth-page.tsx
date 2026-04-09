@@ -19,7 +19,7 @@ export function AuthPage() {
     setDidSendLink(false)
 
     if (!email.trim()) {
-      setErrorMessage('Enter an email address to receive the magic link.')
+      setErrorMessage('Enter your email address to continue.')
       return
     }
 
@@ -41,40 +41,38 @@ export function AuthPage() {
         <Card className="overflow-hidden border-none bg-[linear-gradient(145deg,_rgba(13,34,57,1)_0%,_rgba(22,58,87,1)_60%,_rgba(236,114,34,0.92)_100%)] p-6 text-white sm:p-8">
           <p className="text-[11px] uppercase tracking-[0.22em] text-white/50">Tasco Open Mobility</p>
           <h1 className="mt-4 max-w-xl font-display text-[2.8rem] leading-[0.95] sm:text-[4rem]">
-            A daily driver copilot that feels signed in and real.
+            Stay ahead of car trouble before it interrupts your day.
           </h1>
           <p className="mt-4 max-w-xl text-sm leading-7 text-white/78 sm:text-[15px]">
-            Keep the same dashboard, vehicle diagnostic, booking, and assistant flow. Supabase Auth simply gives the MVP a credible product shell and a persistent signed-in state.
+            WashGo Copilot helps drivers spot issues early, understand what matters now, and act before small problems turn into inconvenient ones.
           </p>
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
             <div className="rounded-[24px] border border-white/10 bg-white/10 px-4 py-4">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Flow</p>
-              <p className="mt-2 font-display text-2xl">Magic link</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Daily view</p>
+              <p className="mt-2 font-display text-2xl">Clear guidance</p>
             </div>
             <div className="rounded-[24px] border border-white/10 bg-white/10 px-4 py-4">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">State</p>
-              <p className="mt-2 font-display text-2xl">Persistent</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Vehicle health</p>
+              <p className="mt-2 font-display text-2xl">Early signals</p>
             </div>
             <div className="rounded-[24px] border border-white/10 bg-white/10 px-4 py-4">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Backend</p>
-              <p className="mt-2 font-display text-2xl">Auth only</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Next action</p>
+              <p className="mt-2 font-display text-2xl">Move sooner</p>
             </div>
           </div>
         </Card>
 
         <Card className="p-5 sm:p-7">
           <p className="text-[11px] uppercase tracking-[0.2em] text-ink/45">Welcome</p>
-          <h2 className="mt-3 font-display text-[2.3rem] leading-tight">Sign in to open WashGo Copilot</h2>
+          <h2 className="mt-3 font-display text-[2.3rem] leading-tight">Open your driver companion</h2>
           <p className="mt-3 text-sm leading-6 text-ink/68">
-            Use a Supabase magic link for the fastest demo-friendly login flow. Once signed in, the current mock product experience stays exactly the same.
+            Sign in to see your daily vehicle briefing, service priorities, and the next smart move for your car.
           </p>
 
           {!isConfigured ? (
             <div className="mt-6 rounded-[24px] border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-6 text-amber-900">
-              <p className="font-semibold">Supabase is not configured yet.</p>
-              <p className="mt-1">
-                Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to a `.env.local` file, then restart the Vite dev server.
-              </p>
+              <p className="font-semibold">Sign-in is not ready yet.</p>
+              <p className="mt-1">Finish the app configuration, then return here to continue.</p>
             </div>
           ) : (
             <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
@@ -90,7 +88,7 @@ export function AuthPage() {
               </label>
               <Button className="w-full gap-2" disabled={isSubmitting} type="submit">
                 <Mail className="h-4 w-4" />
-                {isSubmitting ? 'Sending link...' : 'Send magic link'}
+                {isSubmitting ? 'Continuing...' : 'Continue'}
               </Button>
             </form>
           )}
@@ -98,7 +96,7 @@ export function AuthPage() {
           {didSendLink ? (
             <div className="mt-4 flex gap-3 rounded-[22px] border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm leading-6 text-emerald-900">
               <CheckCircle2 className="mt-0.5 h-5 w-5 flex-none" />
-              <p>Magic link sent. Open it on this device to continue straight into the dashboard.</p>
+              <p>Check your email to continue into WashGo Copilot.</p>
             </div>
           ) : null}
 
@@ -112,9 +110,9 @@ export function AuthPage() {
             <div className="flex items-start gap-3">
               <ShieldCheck className="mt-0.5 h-5 w-5 text-ink/65" />
               <div className="text-sm leading-6 text-ink/70">
-                <p className="font-semibold text-ink">Hackathon-friendly setup</p>
+                <p className="font-semibold text-ink">Built for everyday drivers</p>
                 <p className="mt-1">
-                  Frontend uses only the public Supabase URL and anon key. Vehicle, booking, and assistant data remain mock-driven for the demo.
+                  See what needs attention, understand why it matters, and act with more confidence before your routine is disrupted.
                 </p>
               </div>
             </div>
