@@ -1,0 +1,14 @@
+# Demo Images for Lens Feature
+
+Place 2-3 known-good test images here for the hackathon demo:
+
+1. A clear dashboard warning light photo (e.g., check engine light, oil pressure warning)
+2. A readable service book or receipt photo
+3. (Optional) Another warning light or maintenance document
+
+Recommended naming:
+- `warning-light-engine-check.jpg`
+- `service-book-sample.jpg`
+- `warning-light-oil-pressure.jpg`
+
+These images will be used to demonstrate the Lens feature reliably during the demo.

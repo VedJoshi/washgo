@@ -29,7 +29,7 @@ export type DriverAlert = {
 export type QuickAction = {
   id: string
   label: string
-  href: '/' | '/vehicle' | '/booking' | '/assistant'
+  href: '/' | '/vehicle' | '/booking' | '/assistant' | '/lens' | '/history' | '/telemetry'
 }
 
 export type DailyBrief = {
@@ -85,4 +85,122 @@ export type ChatMessage = {
 export type AssistantReply = {
   message: ChatMessage
   followUpSuggestions: string[]
+}
+
+export type GarageEntry = {
+  id: string
+  name: string
+  address: string
+  district: string
+  city: 'hanoi' | 'hcmc'
+  lat: number
+  lng: number
+  distanceKm: number
+  rating: number
+  reviewCount: number
+  priceTier: 'budget' | 'mid' | 'premium'
+  services: string[]
+  certifications: string[]
+  openNow: boolean
+  warrantyDays: number
+}
+
+export type ServiceQuote = {
+  garageId: string
+  serviceType: string
+  lineItems: { label: string; priceVnd: number }[]
+  totalVnd: number
+  estimatedDurationHours: number
+  warrantyKm: number
+}
+
+export type BookingStatus = {
+  bookingId: string
+  step: 'confirmed' | 'in_progress' | 'completed' | 'cancelled'
+  currentStepLabel: string
+  estimatedCompletionTime: string
+}
+
+export type ETCActivity = {
+  date: string
+  tollStation: string
+  amountVnd: number
+  direction: string
+}
+
+export type ETCWallet = {
+  balanceVnd: number
+  recentActivity: ETCActivity[]
+}
+
+export type ServiceRecordEntry = {
+  id: string
+  date: string
+  odometerKm: number
+  serviceType: string
+  garageId: string
+  garageName: string
+  costVnd: number
+  partsReplaced: string[]
+  warrantyExpiryDate: string | null
+  notes: string
+  source: 'manual' | 'lens_extracted' | 'booking'
+}
+
+export type CarHealthRecord = {
+  vehicleId: string
+  entries: ServiceRecordEntry[]
+  totalSpentVnd: number
+  lastServiceDate: string
+  nextDueDate: string | null
+}
+
+export type WarningLightResult = {
+  symbolName: string
+  explanation: string
+  urgency: 'immediate' | 'soon' | 'monitor'
+  recommendedAction: string
+  suggestedServiceType: string
+}
+
+export type ServiceRecordExtraction = {
+  entries: ServiceRecordEntry[]
+  confidence: 'high' | 'medium' | 'low'
+  notes: string
+}
+
+export type TelemetryReading = {
+  id: string
+  vehicleId: string
+  loggedAt: string
+  fuelLevelPct: number | null
+  tyrePressurePsi: {
+    frontLeft: number | null
+    frontRight: number | null
+    rearLeft: number | null
+    rearRight: number | null
+  }
+  oilLevelPct: number | null
+  coolantLevelPct: number | null
+  batteryVoltage: number | null
+  notes: string
+}
+
+export type TelemetryAnalysis = {
+  summary: string
+  predictions: { label: string; detail: string }[]
+  alerts: { metric: string; message: string; severity: 'low' | 'medium' | 'high' }[]
+  bookingCta: { show: boolean; serviceType: string; reason: string }
+}
+
+export type ToolCall = {
+  id: string
+  name: string
+  arguments: Record<string, unknown>
+}
+
+export type ToolResult = {
+  toolCallId: string
+  name: string
+  content: string
 }

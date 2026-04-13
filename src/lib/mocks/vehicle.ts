@@ -2,13 +2,13 @@ import type { Vehicle } from '../../types/domain'
 
 export const activeVehicle: Vehicle = {
   id: 'vehicle-01',
-  nickname: 'City Runner',
-  make: 'Mazda',
-  model: 'CX-5',
-  year: 2022,
+  nickname: 'Daily Driver',
+  make: 'Toyota',
+  model: 'Vios',
+  year: 2021,
   fuelType: 'gasoline',
-  plateNumber: '51K-267.19',
-  currentOdometerKm: 47210,
-  lastServiceDate: '2026-02-18',
-  nextServiceDueKm: 50000,
+  plateNumber: '30F-123.45',
+  currentOdometerKm: 38500,
+  lastServiceDate: '2026-01-15',
+  nextServiceDueKm: 45000,
 }
