@@ -11,8 +11,8 @@ export const findNearbyServicesTool: ToolDefinition = {
       properties: {
         serviceType: {
           type: 'string',
-          description: 'Type of service needed: car_wash, car_repair, oil_change, battery, tire_service, brake_service, diagnostic',
-          enum: ['car_wash', 'car_repair', 'oil_change', 'battery', 'tire_service', 'brake_service', 'diagnostic'],
+          description: 'Type of service needed: car_wash, car_repair, oil_change, battery, tire_rotation, brake_service, diagnostic',
+          enum: ['car_wash', 'car_repair', 'oil_change', 'battery', 'tire_rotation', 'brake_service', 'diagnostic'],
         },
         lat: {
           type: 'number',

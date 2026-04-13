@@ -28,6 +28,10 @@ export interface ToolCall {
   arguments: Record<string, unknown>
 }
 
+export type QwenResponse =
+  | { kind: 'content'; content: string }
+  | { kind: 'tool_calls'; toolCalls: ToolCall[] }
+
 interface QwenChatOptions {
   model: string
   jsonMode?: boolean
@@ -72,7 +76,7 @@ function buildBody(messages: ChatMessage[], options: QwenChatOptions): Record<st
 export async function qwenChat(
   messages: ChatMessage[],
   options: QwenChatOptions,
-): Promise<string> {
+): Promise<QwenResponse> {
   const response = await fetch(`${BASE_URL}/chat/completions`, {
     method: 'POST',
     headers: buildHeaders(),
@@ -92,16 +96,17 @@ export async function qwenChat(
   }
 
   if (choice.message.tool_calls && choice.message.tool_calls.length > 0) {
-    return JSON.stringify({
-      tool_calls: choice.message.tool_calls.map((tc: { id: string; function: { name: string; arguments: string } }) => ({
+    return {
+      kind: 'tool_calls',
+      toolCalls: choice.message.tool_calls.map((tc: { id: string; function: { name: string; arguments: string } }) => ({
         id: tc.id,
         name: tc.function.name,
         arguments: JSON.parse(tc.function.arguments),
       })),
-    })
+    }
   }
 
-  return choice.message.content || ''
+  return { kind: 'content', content: choice.message.content || '' }
 }
 
 export async function* qwenChatStream(
@@ -130,6 +135,14 @@ export async function* qwenChatStream(
   const decoder = new TextDecoder()
   let buffer = ''
 
+  interface ToolCallAccumulator {
+    id: string
+    name: string
+    argsBuffer: string
+  }
+
+  const toolCallMap = new Map<number, ToolCallAccumulator>()
+
   try {
     while (true) {
       const { done, value } = await reader.read()
@@ -150,11 +163,15 @@ export async function* qwenChatStream(
 
           if (delta?.tool_calls) {
             for (const tc of delta.tool_calls) {
-              yield {
-                id: tc.id || '',
-                name: tc.function?.name || '',
-                arguments: tc.function?.arguments ? JSON.parse(tc.function.arguments) : {},
+              const index = tc.index ?? 0
+              let acc = toolCallMap.get(index)
+              if (!acc) {
+                acc = { id: '', name: '', argsBuffer: '' }
+                toolCallMap.set(index, acc)
               }
+              if (tc.id) acc.id = tc.id
+              if (tc.function?.name) acc.name = tc.function.name
+              if (tc.function?.arguments) acc.argsBuffer += tc.function.arguments
             }
           }
 
@@ -163,6 +180,20 @@ export async function* qwenChatStream(
           }
         } catch {
           continue
+        }
+      }
+    }
+
+    for (const acc of toolCallMap.values()) {
+      if (acc.id && acc.name) {
+        try {
+          yield {
+            id: acc.id,
+            name: acc.name,
+            arguments: acc.argsBuffer ? JSON.parse(acc.argsBuffer) : {},
+          }
+        } catch {
+          console.warn('[Qwen Stream] Failed to parse tool call arguments:', acc.argsBuffer)
         }
       }
     }
@@ -193,9 +224,15 @@ export async function qwenVision(
     },
   ]
 
-  return qwenChat(messages, {
+  const response = await qwenChat(messages, {
     model,
     jsonMode: true,
     temperature: 0.3,
   })
+
+  if (response.kind === 'tool_calls') {
+    throw new Error('Unexpected tool_calls response from vision model')
+  }
+
+  return response.content
 }

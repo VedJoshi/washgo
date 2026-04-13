@@ -1,5 +1,6 @@
+import { useCallback, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { assistantService } from '../../../lib/api/adapters/mock-assistant-service'
+import { assistantService, sendMessageStreaming } from '../../../lib/api/adapters/qwen-assistant-service'
 import { queryKeys } from '../../../lib/query/keys'
 import { useSessionStore } from '../../../store/session-store'
 import type { ChatMessage } from '../../../types/domain'
@@ -7,6 +8,9 @@ import type { ChatMessage } from '../../../types/domain'
 export function useAssistantChat() {
   const queryClient = useQueryClient()
   const vehicleId = useSessionStore((state) => state.activeVehicleId)
+  const [streamingContent, setStreamingContent] = useState<string>('')
+  const [isStreaming, setIsStreaming] = useState(false)
+  const streamingMessageIdRef = useRef<string | null>(null)
 
   const conversationQuery = useQuery({
     queryKey: queryKeys.conversation(vehicleId),
@@ -14,7 +18,22 @@ export function useAssistantChat() {
   })
 
   const sendMutation = useMutation({
-    mutationFn: (message: string) => assistantService.sendMessage({ vehicleId, message }),
+    mutationFn: async (message: string) => {
+      const currentMessages = queryClient.getQueryData<ChatMessage[]>(queryKeys.conversation(vehicleId)) ?? []
+      const messageId = `assistant-${Date.now()}`
+      streamingMessageIdRef.current = messageId
+      setStreamingContent('')
+      setIsStreaming(true)
+
+      const reply = await sendMessageStreaming(vehicleId, message, currentMessages, (chunk) => {
+        setStreamingContent((prev) => prev + chunk)
+      })
+
+      setIsStreaming(false)
+      streamingMessageIdRef.current = null
+      setStreamingContent('')
+      return reply
+    },
     onMutate: async (message) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.conversation(vehicleId) })
       const previous = queryClient.getQueryData<ChatMessage[]>(queryKeys.conversation(vehicleId)) ?? []
@@ -32,6 +51,8 @@ export function useAssistantChat() {
       if (context?.previous) {
         queryClient.setQueryData(queryKeys.conversation(vehicleId), context.previous)
       }
+      setIsStreaming(false)
+      setStreamingContent('')
     },
     onSuccess: (reply) => {
       const previous = queryClient.getQueryData<ChatMessage[]>(queryKeys.conversation(vehicleId)) ?? []
@@ -39,10 +60,25 @@ export function useAssistantChat() {
     },
   })
 
+  const getMessagesWithStreaming = useCallback(() => {
+    const messages = conversationQuery.data ?? []
+    if (!isStreaming || !streamingContent) return messages
+
+    const streamingMessage: ChatMessage = {
+      id: streamingMessageIdRef.current || `assistant-streaming-${Date.now()}`,
+      role: 'assistant',
+      content: streamingContent,
+      createdAt: new Date().toISOString(),
+    }
+
+    return [...messages, streamingMessage]
+  }, [conversationQuery.data, isStreaming, streamingContent])
+
   return {
-    messages: conversationQuery.data ?? [],
+    messages: getMessagesWithStreaming(),
     isLoading: conversationQuery.isLoading,
-    isSending: sendMutation.isPending,
+    isSending: sendMutation.isPending || isStreaming,
+    isStreaming,
     sendMessage: (message: string) => sendMutation.mutate(message),
     followUpSuggestions: sendMutation.data?.followUpSuggestions ?? [
       'What happens if I delay this service?',

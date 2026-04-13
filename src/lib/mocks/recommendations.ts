@@ -5,7 +5,7 @@ export const vehicleHealth: VehicleHealth = {
   score: 72,
   status: 'watch',
   issues: [
-    'Oil change is overdue — 3 months and ~2,300 km past the recommended interval since last service.',
+    'Oil change interval approaching — 2,300 km driven since last service on 2026-01-15.',
     'Battery strain detected from repeated short urban trips and frequent idle time in traffic.',
     'Tire tread wear is uneven — front tires showing more wear than rears after last rotation in October.',
   ],
@@ -13,15 +13,15 @@ export const vehicleHealth: VehicleHealth = {
     {
       id: 'rec-1',
       category: 'oil',
-      title: 'Schedule an oil change immediately',
+      title: 'Schedule an oil change soon',
       description:
-        'Your Vios is 2,300 km past the recommended oil change interval. Book a service this week to avoid engine wear.',
-      issue: 'Last oil change was on 2026-01-15 at 36,200 km. Current odometer reads 38,500 km — well beyond the 5,000 km interval.',
-      impact: 'Delayed oil changes increase engine wear, reduce fuel efficiency, and can void warranty coverage on your Vios.',
-      actionLabel: 'Book oil change now',
+        'Your Vios has driven 2,300 km since the last oil change. Plan a service within the next 2,700 km to stay within the 5,000 km interval.',
+      issue: 'Last oil change was on 2026-01-15 at 36,200 km. Current odometer reads 38,500 km — approaching the 5,000 km recommended interval.',
+      impact: 'Staying on schedule prevents engine wear, maintains fuel efficiency, and keeps warranty coverage valid on your Vios.',
+      actionLabel: 'Book oil change',
       urgency: 'high',
       estimatedPriceRange: '650,000-900,000 VND',
-      recommendedWithinDays: 3,
+      recommendedWithinDays: 10,
     },
     {
       id: 'rec-2',

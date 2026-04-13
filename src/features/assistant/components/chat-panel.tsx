@@ -6,7 +6,7 @@ import { MessageList } from './message-list'
 import { SuggestionChips } from './suggestion-chips'
 
 export function ChatPanel() {
-  const { messages, isLoading, isSending, sendMessage, followUpSuggestions } = useAssistantChat()
+  const { messages, isLoading, isSending, isStreaming, sendMessage, followUpSuggestions } = useAssistantChat()
 
   if (isLoading) {
     return <Spinner label="Opening the assistant..." />
@@ -18,10 +18,10 @@ export function ChatPanel() {
         <p className="text-[11px] uppercase tracking-[0.22em] text-ink/45">Assistant</p>
         <p className="mt-2 font-display text-[2.15rem] leading-tight">Driver assistant</p>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-ink/65">
-          Ask about maintenance, timing, and what to do next. Replies are mock-based but typed and swappable.
+          Ask about maintenance, timing, and what to do next. Powered by Qwen with streaming responses.
         </p>
       </div>
-      <MessageList messages={messages} />
+      <MessageList messages={messages} isStreaming={isStreaming} />
       <SuggestionChips suggestions={followUpSuggestions} onSelect={sendMessage} />
       <ChatInput isSending={isSending} onSend={sendMessage} />
     </Card>

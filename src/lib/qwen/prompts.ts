@@ -137,7 +137,7 @@ Return a JSON object matching this exact schema:
     {
       "id": "qa-1",
       "label": string,
-      "href": "/" | "/vehicle" | "/booking" | "/assistant" | "/lens" | "/history"
+      "href": "/" | "/vehicle" | "/booking" | "/assistant" | "/lens" | "/history" | "/telemetry"
     }
   ]
 }
@@ -152,7 +152,7 @@ export function buildWarningLightPrompt(): string {
   "explanation": string (2-3 sentences in plain English explaining what it means),
   "urgency": "immediate" | "soon" | "monitor",
   "recommendedAction": string (specific action the driver should take),
-  "suggestedServiceType": string (maps to: oil_change, battery, tire_rotation, diagnostic, brake_service, car_wash, inspection)
+  "suggestedServiceType": string (maps to: oil_change, battery, tire_rotation, diagnostic, brake_service, car_wash, car_repair)
 }
 
 If the image is unclear or you cannot identify the symbol, return:

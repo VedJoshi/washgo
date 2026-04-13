@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { vehicleService } from '../../../lib/api/adapters/mock-vehicle-service'
+import { vehicleService } from '../../../lib/api/adapters/qwen-vehicle-service'
 import { queryKeys } from '../../../lib/query/keys'
 import { useSessionStore } from '../../../store/session-store'
 
