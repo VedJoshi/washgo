@@ -1,14 +1,19 @@
 import { create } from 'zustand'
 import { currentUser } from '../lib/mocks/user'
+import type { DailyBrief } from '../types/domain'
 
 type SessionState = {
   user: typeof currentUser
   activeVehicleId: string
+  cachedDailyBrief?: DailyBrief
+  cachedDailyBriefKey?: string
   selectedRecommendationId?: string
   selectedBookingOptionId?: string
   selectedGarageId?: string
   pendingAssistantPrompt?: string
   serviceFinderServiceType: 'car_wash' | 'car_repair'
+  setCachedDailyBrief: (cacheKey: string, brief: DailyBrief) => void
+  clearCachedDailyBrief: () => void
   setSelectedRecommendationId: (selectedRecommendationId?: string) => void
   setSelectedBookingOptionId: (selectedBookingOptionId?: string) => void
   setSelectedGarageId: (selectedGarageId?: string) => void
@@ -20,11 +25,19 @@ type SessionState = {
 export const useSessionStore = create<SessionState>((set) => ({
   user: currentUser,
   activeVehicleId: 'vehicle-01',
+  cachedDailyBrief: undefined,
+  cachedDailyBriefKey: undefined,
   selectedRecommendationId: 'rec-1',
   selectedBookingOptionId: 'slot-1',
   selectedGarageId: undefined,
   pendingAssistantPrompt: undefined,
   serviceFinderServiceType: 'car_repair',
+  setCachedDailyBrief: (cacheKey, brief) =>
+    set({
+      cachedDailyBriefKey: cacheKey,
+      cachedDailyBrief: brief,
+    }),
+  clearCachedDailyBrief: () => set({ cachedDailyBriefKey: undefined, cachedDailyBrief: undefined }),
   setSelectedRecommendationId: (selectedRecommendationId) =>
     set({ selectedRecommendationId, selectedBookingOptionId: undefined }),
   setSelectedBookingOptionId: (selectedBookingOptionId) => set({ selectedBookingOptionId }),
