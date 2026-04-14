@@ -3,10 +3,12 @@ import { vehicleHealth } from '../../mocks/recommendations'
 import { carHealthRecord } from '../../mocks/car-health-record'
 import { seededConversation } from '../../mocks/chat'
 import { delay } from '../../utils/delay'
-import { qwenChat, qwenChatStream } from '../../qwen/client'
+import { qwenChat } from '../../qwen/client'
 import { buildAssistantSystemPrompt } from '../../qwen/prompts'
+import { allTools, dispatchToolCall, getToolLabel } from '../../qwen/tools'
 import type { AssistantService } from '../services/assistant-service'
 import type { AssistantReply, ChatMessage } from '../../../types/domain'
+import type { ChatMessage as QwenChatMessage } from '../../qwen/client'
 
 function generateSuggestions(content: string): string[] {
   const lower = content.toLowerCase()
@@ -22,30 +24,8 @@ function generateSuggestions(content: string): string[] {
   return ['What should I prioritize?', 'Find a nearby service', 'Explain more about this']
 }
 
-async function fetchStreamingReply(
-  conversationHistory: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
-  onChunk: (chunk: string) => void,
-): Promise<string> {
-  const model = import.meta.env.VITE_QWEN_TEXT_MODEL || 'qwen-max'
-  let fullContent = ''
-
-  const stream = qwenChatStream(conversationHistory, {
-    model,
-    temperature: 0.7,
-  })
-
-  for await (const chunk of stream) {
-    if (typeof chunk === 'string') {
-      fullContent += chunk
-      onChunk(chunk)
-    }
-  }
-
-  return fullContent
-}
-
 async function fetchNonStreamingReply(
-  conversationHistory: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
+  conversationHistory: QwenChatMessage[],
 ): Promise<string> {
   const model = import.meta.env.VITE_QWEN_TEXT_MODEL || 'qwen-max'
 
@@ -59,6 +39,84 @@ async function fetchNonStreamingReply(
   }
 
   return response.content
+}
+
+function toConversationHistory(messages: ChatMessage[]): QwenChatMessage[] {
+  return messages.slice(-10).map((message) => ({
+    role: message.role,
+    content: message.content,
+  }))
+}
+
+function streamTextContent(content: string, onChunk: (chunk: string) => void) {
+  const parts = content.split(/(\s+)/).filter(Boolean)
+  for (const part of parts) {
+    onChunk(part)
+  }
+}
+
+async function runAssistantToolLoop(
+  conversationHistory: QwenChatMessage[],
+  onToolActivity?: (activity: string) => void,
+): Promise<string> {
+  const model = import.meta.env.VITE_QWEN_TEXT_MODEL || 'qwen-max'
+  const messages: QwenChatMessage[] = [...conversationHistory]
+
+  for (let round = 1; round <= 5; round += 1) {
+    const response = await qwenChat(messages, {
+      model,
+      temperature: 0.7,
+      tools: allTools,
+    })
+
+    if (response.kind === 'content' && response.content.trim()) {
+      return response.content
+    }
+
+    if (response.kind !== 'tool_calls' || response.toolCalls.length === 0) {
+      break
+    }
+
+    console.log(
+      `[Qwen Assistant] tool round ${round}`,
+      response.toolCalls.map((toolCall) => toolCall.name),
+    )
+
+    messages.push({
+      role: 'assistant',
+      content: '',
+      tool_calls: response.toolCalls.map((toolCall) => ({
+        id: toolCall.id,
+        type: 'function',
+        function: {
+          name: toolCall.name,
+          arguments: JSON.stringify(toolCall.arguments),
+        },
+      })),
+    })
+
+    for (const toolCall of response.toolCalls) {
+      const label = getToolLabel(toolCall.name)
+      onToolActivity?.(label)
+
+      let toolResult: unknown
+      try {
+        toolResult = await dispatchToolCall(toolCall.name, toolCall.arguments)
+      } catch (error) {
+        console.warn(`[Qwen Assistant] tool ${toolCall.name} failed`, error)
+        toolResult = { error: error instanceof Error ? error.message : 'Unknown tool execution error' }
+      }
+
+      console.log(`[Qwen Assistant] tool ${toolCall.name} result`, toolResult)
+      messages.push({
+        role: 'tool',
+        tool_call_id: toolCall.id,
+        content: JSON.stringify(toolResult),
+      })
+    }
+  }
+
+  return 'I can help with that, but I could not complete the full action flow right now. Please try once more and I will retry nearby services and booking options.'
 }
 
 export const assistantService: AssistantService = {
@@ -124,7 +182,7 @@ export const assistantService: AssistantService = {
     ]
 
     try {
-      const content = await fetchNonStreamingReply(conversationHistory)
+      const content = await runAssistantToolLoop(conversationHistory)
       return {
         message: {
           id: `assistant-${Date.now()}`,
@@ -155,6 +213,7 @@ export async function sendMessageStreaming(
   message: string,
   existingMessages: ChatMessage[],
   onChunk: (chunk: string) => void,
+  onToolActivity?: (activity: string) => void,
 ): Promise<AssistantReply> {
   const apiKey = import.meta.env.VITE_QWEN_API_KEY
 
@@ -180,14 +239,15 @@ export async function sendMessageStreaming(
     'Ho Chi Minh City, District 1',
   )
 
-  const conversationHistory = [
+  const conversationHistory: QwenChatMessage[] = [
     { role: 'system' as const, content: systemPrompt },
-    ...existingMessages.slice(-10).map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+    ...toConversationHistory(existingMessages),
     { role: 'user' as const, content: message },
   ]
 
   try {
-    const content = await fetchStreamingReply(conversationHistory, onChunk)
+    const content = await runAssistantToolLoop(conversationHistory, onToolActivity)
+    streamTextContent(content, onChunk)
     return {
       message: {
         id: `assistant-${Date.now()}`,
@@ -201,6 +261,7 @@ export async function sendMessageStreaming(
     console.warn('[Qwen Assistant Streaming] Failed, falling back to non-stream:', error)
     try {
       const content = await fetchNonStreamingReply(conversationHistory)
+      streamTextContent(content, onChunk)
       return {
         message: {
           id: `assistant-${Date.now()}`,
