@@ -6,7 +6,7 @@ import { qwenChat } from '../../../lib/qwen/client'
 import { buildValuationInsightPrompt } from '../../../lib/qwen/prompts'
 import type { ServiceRecordEntry } from '../../../types/domain'
 
-const VALUATION_FALLBACK = 'Your complete service history typically adds 5–10% to resale value. Keep it up.'
+const VALUATION_FALLBACK = 'Your complete service history typically adds 5-10% to resale value. Keep it up.'
 
 function deriveStats(entries: ServiceRecordEntry[]) {
   const totalSpentVnd = entries.reduce((sum, e) => sum + e.costVnd, 0)
@@ -66,15 +66,18 @@ export function useCarHistory() {
   const [isLoadingInsight, setIsLoadingInsight] = useState(false)
 
   useEffect(() => {
-    if (entries.length === 0) return
+    if (entries.length === 0) {
+      setValuationInsight(VALUATION_FALLBACK)
+      setIsLoadingInsight(false)
+      return
+    }
+
     setIsLoadingInsight(true)
     void fetchValuationInsight(entries).then((insight) => {
       setValuationInsight(insight)
       setIsLoadingInsight(false)
     })
-    // run once on mount — intentionally no entries dependency to avoid re-calling on Lens append
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [entries])
 
   return {
     sortedEntries: sorted,

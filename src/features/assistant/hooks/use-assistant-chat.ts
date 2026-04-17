@@ -8,6 +8,7 @@ import type { ChatMessage } from '../../../types/domain'
 export function useAssistantChat() {
   const queryClient = useQueryClient()
   const vehicleId = useSessionStore((state) => state.activeVehicleId)
+  const uiLanguage = useSessionStore((state) => state.uiLanguage)
   const pendingAssistantPrompt = useSessionStore((state) => state.pendingAssistantPrompt)
   const clearPendingAssistantPrompt = useSessionStore((state) => state.clearPendingAssistantPrompt)
   const [streamingContent, setStreamingContent] = useState<string>('')
@@ -108,9 +109,9 @@ export function useAssistantChat() {
     toolActivities,
     sendMessage: (message: string) => sendMutation.mutate(message),
     followUpSuggestions: sendMutation.data?.followUpSuggestions ?? [
-      'What happens if I delay this service?',
-      'Explain the battery recommendation',
-      'Find the fastest option today',
+      uiLanguage === 'vi' ? 'Nếu tôi trì hoãn dịch vụ này thì sao?' : 'What happens if I delay this service?',
+      uiLanguage === 'vi' ? 'Giải thích khuyến nghị về ắc quy' : 'Explain the battery recommendation',
+      uiLanguage === 'vi' ? 'Tìm lựa chọn nhanh nhất hôm nay' : 'Find the fastest option today',
     ],
   }
 }

@@ -1,74 +1,82 @@
-# WashGo Demo Script — 3 Minutes
+# WashGo Demo Script - 3 Minutes
 
 ## Setup
-- App is open and logged in, sitting on the Dashboard
-- Qwen API key is set in `.env`
-- Use the demo image shortcuts on the Lens page (no need to find real photos)
+- App is open and logged in, sitting on Dashboard.
+- Qwen API key and STT model are set in `.env`.
+- Use the demo image shortcuts on Lens page.
 
 ---
 
-## [0:00 — Dashboard]
+## [0:00 - Dashboard]
 
-> *"Every morning, Qwen generates a personalised brief for this driver."*
+> "Every morning, Qwen generates a personalized brief for this driver."
 
-- Land on dashboard. Point to the greeting and alert cards.
-- *"This is qwen-plus in JSON mode — structured output, not a chatbot."*
-- Click **"Ask why"** → goes to assistant with pre-filled context.
-
----
-
-## [0:30 — Assistant]
-
-> *"The assistant is Qwen-max with streaming and live tool calls."*
-
-- Type: `Find me a Tasco garage for a battery diagnostic this weekend`
-- Watch the tool-call chips appear: *"Checking nearby services… Fetching quote…"*
-- *"Every chip is a real function call — the model is reasoning over distance, price, and availability."*
-- Let the response stream fully.
+- Land on dashboard and point to greeting + alert cards.
+- Say: "This is qwen-plus in JSON mode with structured output."
+- Click a quick action to move into assistant context.
 
 ---
 
-## [1:20 — Vehicle]
+## [0:30 - Assistant + Voice]
 
-> *"The health score and all recommendations are also Qwen-generated."*
+> "The assistant is qwen-max with streaming, function calling, and now voice input via Qwen STT."
 
-- Navigate to Vehicle. Point to health score and recommendation cards.
-- *"Change the mock odometer and Qwen recalculates — it's not a lookup table."*
-
----
-
-## [1:50 — Lens]
-
-> *"Now for the vision demo — this is what no other team has."*
-
-- Navigate to Lens. Click **"Use engine warning"** shortcut.
-- Hit **"Analyze warning light"**.
-- When result appears: *"Qwen-VL identified the symbol, assessed urgency, and recommended an action. One photo, one API call."*
-- Switch to **Service Book** tab. Click **"Use sample receipt"**.
-- Hit **"Extract service history"**, then **"Add extracted entries to history"**.
-- *"Paper records digitised in seconds — this is the data moat."*
+- Tap mic in chat input and speak: `Find me a Tasco garage for a battery diagnostic this weekend`.
+- Show transcript inserted into input, then send.
+- Watch tool chips: "Checking nearby services...", "Calculating quote...".
+- Let response stream to completion.
 
 ---
 
-## [2:30 — History]
+## [1:10 - Vehicle]
 
-> *"Everything feeds into the car health record."*
+> "The health score and recommendations are also Qwen-generated."
 
-- Navigate to History. Show the full timeline — point to the just-extracted "Lens" badge entry at the top.
-- Point to the stats row: services count, total VND spent, next due date.
-- Wait for valuation insight to load: *"Qwen generates a resale value insight from the full record."*
+- Navigate to Vehicle.
+- Point to score and recommendation cards.
+- Say: "Change odometer/last-service seed and Qwen recalculates."
 
 ---
 
-## [2:50 — Close]
+## [1:40 - Lens]
 
-> *"The assistant now has the full history in its context. Ask it anything and it references real data — not hardcoded answers."*
+> "Now the vision moment: warning-light explanation and service record extraction."
 
-- *"Tasco's 4.1M drivers, daily engagement, one Qwen-powered copilot. That's the pitch."*
+- Navigate to Lens, click `Use engine warning`, then `Analyze warning light`.
+- Explain urgency/action result.
+- Switch to Service Book tab, click `Use sample receipt`, then `Extract service history`.
+- Click `Add extracted entries to history`.
+
+---
+
+## [2:20 - Booking Intelligence]
+
+> "Booking is now AI-guided, not static."
+
+- Navigate to Booking.
+- Point to booking brief card (why now, mechanic tip, recommended slot, duration).
+- Point to nearby garages card (rating, call, directions).
+
+---
+
+## [2:40 - History]
+
+> "Everything feeds into a persistent car health record."
+
+- Navigate to History.
+- Show the latest lens-extracted entry in timeline.
+- Point to stats row and valuation insight.
+
+---
+
+## [2:55 - Close]
+
+> "Four Qwen capabilities in one flow: structured reasoning, agent tools, vision, and voice. That is WashGo's daily engagement moat for Tasco drivers."
 
 ---
 
 ## Fallback Notes
-- If Qwen API is slow: all pages have deterministic fallbacks — the demo never breaks
-- If streaming stalls: the non-streaming fallback fires automatically after timeout
-- Demo images are bundled in the app — no internet needed for Lens shortcuts
+- If Qwen is slow, deterministic fallbacks keep the demo unblocked.
+- If streaming stalls, non-stream fallback still returns an answer.
+- If STT fails or mic permission is denied, user can type immediately.
+- Demo images are bundled in app; no external lookup needed for Lens shortcuts.

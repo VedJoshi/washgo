@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Badge } from '../../../components/ui/badge'
 import { Button } from '../../../components/ui/button'
 import { Card } from '../../../components/ui/card'
+import { t } from '../../../lib/i18n'
 import { useSessionStore } from '../../../store/session-store'
 import { AnalysisResultCard } from './analysis-result-card'
 import { LensActionBar } from './lens-action-bar'
@@ -29,6 +30,7 @@ export function LensPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const previewObjectUrlRef = useRef<string | null>(null)
   const [entriesSaved, setEntriesSaved] = useState(false)
+  const uiLanguage = useSessionStore((state) => state.uiLanguage)
   const appendCarHealthRecordEntries = useSessionStore((state) => state.appendCarHealthRecordEntries)
   const {
     analyzeWarningLight,
@@ -131,10 +133,10 @@ export function LensPage() {
       <Card className="overflow-hidden border-none bg-[linear-gradient(135deg,_rgba(12,36,58,1)_0%,_rgba(21,57,90,1)_52%,_rgba(245,125,41,0.94)_100%)] text-white">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-white/62">Dashboard Lens</p>
-            <p className="mt-2 font-display text-[2.2rem] leading-tight sm:text-[2.8rem]">Visual diagnostics and record extraction</p>
+            <p className="text-[11px] uppercase tracking-[0.22em] text-white/62">{t(uiLanguage, 'lens_header_badge')}</p>
+            <p className="mt-2 font-display text-[2.2rem] leading-tight sm:text-[2.8rem]">{t(uiLanguage, 'lens_header_title')}</p>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/82">
-              Upload a dashboard warning light or service document to get structured AI output with direct assistant and booking actions.
+              {t(uiLanguage, 'lens_header_desc')}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -143,26 +145,26 @@ export function LensPage() {
               className={mode === 'warning' ? '' : 'border-white/20 bg-white/10 text-white hover:bg-white/20'}
               onClick={() => setMode('warning')}
             >
-              Warning Light
+              {t(uiLanguage, 'lens_mode_warning')}
             </Button>
             <Button
               variant={mode === 'service_book' ? 'secondary' : 'ghost'}
               className={mode === 'service_book' ? '' : 'border-white/20 bg-white/10 text-white hover:bg-white/20'}
               onClick={() => setMode('service_book')}
             >
-              Service Book
+              {t(uiLanguage, 'lens_mode_service_book')}
             </Button>
           </div>
         </div>
       </Card>
 
       <Card className="space-y-3">
-        <p className="text-[11px] uppercase tracking-[0.2em] text-ink/45">Demo image shortcuts</p>
+        <p className="text-[11px] uppercase tracking-[0.2em] text-ink/45">{t(uiLanguage, 'lens_demo_shortcuts')}</p>
         <div className="flex flex-wrap gap-2">
-          <Button variant="ghost" onClick={() => void handlePickDemo('engine')}>Use engine warning</Button>
-          <Button variant="ghost" onClick={() => void handlePickDemo('tire')}>Use tire pressure warning</Button>
-          <Button variant="ghost" onClick={() => void handlePickDemo('receipt')}>Use sample receipt</Button>
-          <Button variant="ghost" onClick={() => void handlePickDemo('servicebook')}>Use service book</Button>
+          <Button variant="ghost" onClick={() => void handlePickDemo('engine')}>{t(uiLanguage, 'lens_demo_engine')}</Button>
+          <Button variant="ghost" onClick={() => void handlePickDemo('tire')}>{t(uiLanguage, 'lens_demo_tire')}</Button>
+          <Button variant="ghost" onClick={() => void handlePickDemo('receipt')}>{t(uiLanguage, 'lens_demo_receipt')}</Button>
+          <Button variant="ghost" onClick={() => void handlePickDemo('servicebook')}>{t(uiLanguage, 'lens_demo_service_book')}</Button>
         </div>
       </Card>
 
@@ -170,9 +172,13 @@ export function LensPage() {
 
       <div className="flex flex-wrap items-center gap-2">
         <Button onClick={() => void handleAnalyze()} disabled={!selectedFile || isAnalyzing}>
-          {isAnalyzing ? 'Analyzing...' : mode === 'warning' ? 'Analyze warning light' : 'Extract service history'}
+          {isAnalyzing
+            ? t(uiLanguage, 'lens_analyzing')
+            : mode === 'warning'
+              ? t(uiLanguage, 'lens_analyze_warning')
+              : t(uiLanguage, 'lens_extract_history')}
         </Button>
-        {activeError ? <Badge tone="danger">Analysis failed, fallback used</Badge> : null}
+        {activeError ? <Badge tone="danger">{t(uiLanguage, 'lens_analysis_failed')}</Badge> : null}
       </div>
 
       {mode === 'warning' && warningResult ? (
@@ -184,9 +190,9 @@ export function LensPage() {
           <AnalysisResultCard mode="service_book" serviceBookResult={serviceBookResult} />
           <div className="flex items-center gap-2">
             <Button onClick={handleSaveEntries} disabled={!serviceBookResult.entries.length || entriesSaved}>
-              {entriesSaved ? 'Saved to history' : 'Add extracted entries to history'}
+              {entriesSaved ? t(uiLanguage, 'lens_saved_history') : t(uiLanguage, 'lens_add_entries_to_history')}
             </Button>
-            {entriesSaved ? <Badge tone="good">Entries appended</Badge> : null}
+            {entriesSaved ? <Badge tone="good">{t(uiLanguage, 'lens_entries_appended')}</Badge> : null}
           </div>
         </div>
       ) : null}

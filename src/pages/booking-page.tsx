@@ -9,6 +9,7 @@ import { BookingServiceBriefCard } from '../features/booking/components/booking-
 import { NearbyGaragesCard } from '../features/booking/components/nearby-garages-card'
 import { useBookingFlow } from '../features/booking/hooks/use-booking-flow'
 import { ServiceMap } from '../features/map/components/service-map'
+import { t } from '../lib/i18n'
 import { garages } from '../lib/mocks/garages'
 import { vehicleHealth as mockVehicleHealth } from '../lib/mocks/recommendations'
 import { useSessionStore } from '../store/session-store'
@@ -24,6 +25,7 @@ export function BookingPage() {
   const setServiceFinderServiceType = useSessionStore((state) => state.setServiceFinderServiceType)
   const liveVehicleHealth = useSessionStore((state) => state.liveVehicleHealth)
   const selectedRecommendationId = useSessionStore((state) => state.selectedRecommendationId)
+  const uiLanguage = useSessionStore((state) => state.uiLanguage)
 
   const healthRecs = liveVehicleHealth?.recommendations ?? mockVehicleHealth.recommendations
   const currentRecommendation =
@@ -40,14 +42,14 @@ export function BookingPage() {
   } = useBookingFlow()
 
   if (isLoading) {
-    return <Spinner label="Finding nearby service slots..." />
+    return <Spinner label={t(uiLanguage, 'booking_spinner_finding')} />
   }
 
   if (!bookingOptions.length && !confirmation && activeTab === 'slots') {
     return (
       <EmptyState
-        title="No slots available"
-        description="Try picking another recommendation from the vehicle insight page."
+        title={t(uiLanguage, 'booking_no_slots_title')}
+        description={t(uiLanguage, 'booking_no_slots_desc')}
       />
     )
   }
@@ -65,22 +67,22 @@ export function BookingPage() {
     <div className="space-y-5 sm:space-y-6">
       <div className="flex flex-wrap gap-2">
         <Button variant={activeTab === 'slots' ? 'secondary' : 'ghost'} onClick={() => setActiveTab('slots')}>
-          Booking slots
+          {t(uiLanguage, 'booking_tab_slots')}
         </Button>
         <Button variant={activeTab === 'map' ? 'secondary' : 'ghost'} onClick={() => setActiveTab('map')}>
-          Service map
+          {t(uiLanguage, 'booking_tab_map')}
         </Button>
         <Button
           variant={serviceFinderServiceType === 'car_repair' ? 'secondary' : 'ghost'}
           onClick={() => setServiceFinderServiceType('car_repair')}
         >
-          Car repair
+          {t(uiLanguage, 'booking_service_repair')}
         </Button>
         <Button
           variant={serviceFinderServiceType === 'car_wash' ? 'secondary' : 'ghost'}
           onClick={() => setServiceFinderServiceType('car_wash')}
         >
-          Car wash
+          {t(uiLanguage, 'booking_service_wash')}
         </Button>
       </div>
 
@@ -111,7 +113,7 @@ export function BookingPage() {
 
       {activeTab === 'map' && selectedGarageId ? (
         <p className="text-sm text-ink/65">
-          Selected from map:{' '}
+          {t(uiLanguage, 'booking_selected_from_map')}{' '}
           <span className="font-semibold text-ink">
             {garages.find((g) => g.id === selectedGarageId)?.name ?? selectedGarageId}
           </span>

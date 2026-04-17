@@ -2,6 +2,7 @@ import { BatteryCharging, CircleDot, Droplets, Gauge } from 'lucide-react'
 import { Badge } from '../../../components/ui/badge'
 import { Card } from '../../../components/ui/card'
 import { formatKilometers } from '../../../lib/utils/format'
+import { useSessionStore } from '../../../store/session-store'
 import type { Vehicle, VehicleHealth } from '../../../types/domain'
 
 function statusTone(status: 'watch' | 'needs_service' | 'good') {
@@ -10,30 +11,56 @@ function statusTone(status: 'watch' | 'needs_service' | 'good') {
   return 'danger'
 }
 
-const monitoredSystems = (vehicle: Vehicle) => [
+function firstIssueText(vehicle: Vehicle, health: VehicleHealth, language: 'en' | 'vi') {
+  if (language !== 'vi') {
+    return health.issues.length > 0 ? health.issues[0] : 'All systems are within normal range.'
+  }
+
+  if (health.recommendations[0]?.category === 'oil') {
+    return `Da den moc thay dau, can xu ly trong ${formatKilometers(vehicle.nextServiceDueKm - vehicle.currentOdometerKm)} toi de tranh mai mon dong co.`
+  }
+  if (health.recommendations[0]?.category === 'battery') {
+    return 'Ac quy co dau hieu suy hao do di ngan va dung cho nhieu trong do thi.'
+  }
+  if (health.recommendations[0]?.category === 'tires') {
+    return 'He thong lop can duoc kiem tra de dam bao do bam duong va an toan khi di chuyen.'
+  }
+  return 'He thong dang on dinh, nhung nen tiep tuc theo doi theo khuyen nghi bao duong.'
+}
+
+const monitoredSystems = (vehicle: Vehicle, language: 'en' | 'vi') => [
   {
     key: 'battery',
-    label: 'Battery',
-    state: 'Watch',
-    description: 'Short city trips and idle-heavy usage are reducing reserve stability.',
+    label: language === 'vi' ? 'Ac quy' : 'Battery',
+    state: language === 'vi' ? 'Theo doi' : 'Watch',
+    description:
+      language === 'vi'
+        ? 'Tan suat di ngan va dung cho cao dang lam giam do on dinh cua ac quy.'
+        : 'Short city trips and idle-heavy usage are reducing reserve stability.',
     icon: BatteryCharging,
     markerStyle: { left: '24%', top: '48%' },
     toneClassName: 'bg-amber-300',
   },
   {
     key: 'fluids',
-    label: 'Engine fluids',
-    state: 'Soon',
-    description: `Service due in ${formatKilometers(vehicle.nextServiceDueKm - vehicle.currentOdometerKm)}.`,
+    label: language === 'vi' ? 'Dung dich dong co' : 'Engine fluids',
+    state: language === 'vi' ? 'Som' : 'Soon',
+    description:
+      language === 'vi'
+        ? `Can bao duong trong ${formatKilometers(vehicle.nextServiceDueKm - vehicle.currentOdometerKm)}.`
+        : `Service due in ${formatKilometers(vehicle.nextServiceDueKm - vehicle.currentOdometerKm)}.`,
     icon: Droplets,
     markerStyle: { left: '50%', top: '38%', transform: 'translateX(-50%)' },
     toneClassName: 'bg-sky-300',
   },
   {
     key: 'tires',
-    label: 'Tire pressure',
-    state: 'Check',
-    description: 'Worth checking before any longer drive this week.',
+    label: language === 'vi' ? 'Ap suat lop' : 'Tire pressure',
+    state: language === 'vi' ? 'Kiem tra' : 'Check',
+    description:
+      language === 'vi'
+        ? 'Nen kiem tra truoc cac chuyen di dai trong tuan nay.'
+        : 'Worth checking before any longer drive this week.',
     icon: CircleDot,
     markerStyle: { right: '24%', top: '70%' },
     toneClassName: 'bg-white',
@@ -41,35 +68,47 @@ const monitoredSystems = (vehicle: Vehicle) => [
 ]
 
 export function VehicleDiagnosticPanel({ vehicle, health }: { vehicle: Vehicle; health: VehicleHealth }) {
-  const systems = monitoredSystems(vehicle)
+  const uiLanguage = useSessionStore((state) => state.uiLanguage)
+  const language = uiLanguage === 'vi' ? 'vi' : 'en'
+  const systems = monitoredSystems(vehicle, language)
 
   return (
     <Card className="overflow-hidden border-none bg-[linear-gradient(135deg,_rgba(13,34,57,1)_0%,_rgba(22,58,87,1)_58%,_rgba(39,93,111,1)_100%)] p-0 text-white">
       <div className="grid gap-0 lg:grid-cols-[1.02fr_0.98fr]">
         <div className="p-5 sm:p-7">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-white/45">Your car today</p>
+          <p className="text-[11px] uppercase tracking-[0.22em] text-white/45">{language === 'vi' ? 'Xe cua ban hom nay' : 'Your car today'}</p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <p className="font-display text-[2.6rem] leading-[0.96] sm:text-[3.3rem]">
               {vehicle.make} {vehicle.model}
             </p>
-            <Badge tone={statusTone(health.status)}>{health.status.replace('_', ' ')}</Badge>
+            <Badge tone={statusTone(health.status)}>
+              {language === 'vi'
+                ? health.status === 'needs_service'
+                  ? 'Can bao duong'
+                  : health.status === 'watch'
+                    ? 'Theo doi'
+                    : 'Tot'
+                : health.status.replace('_', ' ')}
+            </Badge>
           </div>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-white/74">
-            {health.issues.length > 0 ? health.issues[0] : 'All systems are within normal range.'}
-          </p>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-white/74">{firstIssueText(vehicle, health, language)}</p>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <div className="rounded-[24px] border border-white/10 bg-white/10 px-4 py-4">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Health score</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">{language === 'vi' ? 'Diem suc khoe xe' : 'Health score'}</p>
               <p className="mt-2 font-display text-5xl leading-none">{health.score}</p>
-              <p className="mt-2 text-sm text-white/68">Stable enough to drive, not ideal to ignore.</p>
+              <p className="mt-2 text-sm text-white/68">
+                {language === 'vi' ? 'Van di duoc hang ngay, nhung khong nen bo qua.' : 'Stable enough to drive, not ideal to ignore.'}
+              </p>
             </div>
             <div className="rounded-[24px] border border-white/10 bg-white/10 px-4 py-4">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Next service</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">{language === 'vi' ? 'Lan bao duong tiep theo' : 'Next service'}</p>
               <p className="mt-2 font-display text-3xl leading-none">
                 {formatKilometers(vehicle.nextServiceDueKm - vehicle.currentOdometerKm)}
               </p>
-              <p className="mt-2 text-sm text-white/68">Service timing is becoming part of the same decision.</p>
+              <p className="mt-2 text-sm text-white/68">
+                {language === 'vi' ? 'Nen dua vao quyet dinh dat lich ngay tu bay gio.' : 'Service timing is becoming part of the same decision.'}
+              </p>
             </div>
           </div>
 
@@ -77,7 +116,7 @@ export function VehicleDiagnosticPanel({ vehicle, health }: { vehicle: Vehicle; 
             <span className="rounded-full border border-white/10 bg-white/8 px-3 py-2">{vehicle.nickname}</span>
             <span className="rounded-full border border-white/10 bg-white/8 px-3 py-2">{vehicle.plateNumber}</span>
             <span className="rounded-full border border-white/10 bg-white/8 px-3 py-2">
-              {formatKilometers(vehicle.currentOdometerKm)} driven
+              {formatKilometers(vehicle.currentOdometerKm)} {language === 'vi' ? 'da di' : 'driven'}
             </span>
           </div>
         </div>
@@ -85,7 +124,7 @@ export function VehicleDiagnosticPanel({ vehicle, health }: { vehicle: Vehicle; 
         <div className="border-t border-white/10 p-5 sm:p-6 lg:border-l lg:border-t-0">
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-white/50">
             <Gauge className="h-4 w-4" />
-            Diagnostic view
+            {language === 'vi' ? 'Che do chan doan' : 'Diagnostic view'}
           </div>
 
           <div className="mt-4 grid gap-4">

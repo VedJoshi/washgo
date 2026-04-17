@@ -171,6 +171,7 @@ export const assistantService: AssistantService = {
     const liveEntries = useSessionStore.getState().carHealthRecordEntries
     const liveHealthRecord = { ...carHealthRecord, entries: liveEntries }
     const liveHealth = useSessionStore.getState().liveVehicleHealth ?? vehicleHealth
+    const uiLanguage = useSessionStore.getState().uiLanguage
     const systemPrompt = buildAssistantSystemPrompt(
       activeVehicle,
       liveHealth,
@@ -178,6 +179,7 @@ export const assistantService: AssistantService = {
       null,
       new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
       'Ho Chi Minh City, District 1',
+      uiLanguage,
     )
 
     const conversationHistory = [
@@ -237,6 +239,7 @@ export async function sendMessageStreaming(
   const liveEntries = useSessionStore.getState().carHealthRecordEntries
   const liveHealthRecord = { ...carHealthRecord, entries: liveEntries }
   const liveHealth = useSessionStore.getState().liveVehicleHealth ?? vehicleHealth
+  const uiLanguage = useSessionStore.getState().uiLanguage
   const systemPrompt = buildAssistantSystemPrompt(
     activeVehicle,
     liveHealth,
@@ -244,6 +247,7 @@ export async function sendMessageStreaming(
     null,
     new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
     'Ho Chi Minh City, District 1',
+    uiLanguage,
   )
 
   const conversationHistory: QwenChatMessage[] = [

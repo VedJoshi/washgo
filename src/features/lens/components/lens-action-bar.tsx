@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../../../components/ui/button'
 import { Card } from '../../../components/ui/card'
+import { t } from '../../../lib/i18n'
 import { useSessionStore } from '../../../store/session-store'
 
 type LensActionBarProps = {
@@ -14,7 +15,9 @@ function mapServiceFinderType(serviceType: string): 'car_wash' | 'car_repair' {
 
 export function LensActionBar({ assistantPrompt, suggestedServiceType }: LensActionBarProps) {
   const navigate = useNavigate()
+  const uiLanguage = useSessionStore((state) => state.uiLanguage)
   const setPendingAssistantPrompt = useSessionStore((state) => state.setPendingAssistantPrompt)
+  const setPendingAssistantVoiceCapture = useSessionStore((state) => state.setPendingAssistantVoiceCapture)
   const setServiceFinderServiceType = useSessionStore((state) => state.setServiceFinderServiceType)
 
   const handleAskAssistant = () => {
@@ -27,23 +30,31 @@ export function LensActionBar({ assistantPrompt, suggestedServiceType }: LensAct
     navigate('/booking')
   }
 
+  const handleAskWithVoice = () => {
+    setPendingAssistantPrompt(assistantPrompt)
+    setPendingAssistantVoiceCapture(true)
+    navigate('/assistant')
+  }
+
   return (
     <Card className="border-none bg-[linear-gradient(180deg,_rgba(23,58,91,1)_0%,_rgba(18,46,72,1)_100%)] text-white">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.2em] text-white/60">Next action</p>
-          <p className="mt-2 font-display text-[1.9rem] leading-tight">Continue from Lens</p>
+          <p className="text-[11px] uppercase tracking-[0.2em] text-white/60">{t(uiLanguage, 'lens_next_action')}</p>
+          <p className="mt-2 font-display text-[1.9rem] leading-tight">{t(uiLanguage, 'lens_continue_from_lens')}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="ghost" className="border-white/20 bg-white/10 text-white hover:bg-white/20" onClick={handleAskAssistant}>
-            Ask assistant about this
+            {t(uiLanguage, 'lens_ask_assistant')}
+          </Button>
+          <Button variant="ghost" className="border-white/20 bg-white/10 text-white hover:bg-white/20" onClick={handleAskWithVoice}>
+            {t(uiLanguage, 'lens_ask_with_voice')}
           </Button>
           <Button className="bg-white text-ink hover:bg-sand" onClick={handleBookService}>
-            Book a service
+            {t(uiLanguage, 'lens_book_service')}
           </Button>
         </div>
       </div>
     </Card>
   )
 }
-

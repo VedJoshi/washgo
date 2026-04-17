@@ -1,9 +1,11 @@
 import { MapPin, Phone, ExternalLink } from 'lucide-react'
 import { Card } from '../../../components/ui/card'
+import { useSessionStore } from '../../../store/session-store'
 import { useNearbyGarages } from '../hooks/use-nearby-garages'
 
 export function NearbyGaragesCard() {
   const { data: garages, isLoading } = useNearbyGarages()
+  const uiLanguage = useSessionStore((state) => state.uiLanguage)
 
   if (isLoading) {
     return (
@@ -21,9 +23,9 @@ export function NearbyGaragesCard() {
   return (
     <Card>
       <div className="mb-4">
-        <p className="text-[11px] uppercase tracking-[0.22em] text-ink/45">Find a garage</p>
-        <p className="mt-1 font-display text-[1.6rem] leading-tight">Nearby Tasco garages</p>
-        <p className="mt-1 text-sm text-ink/60">Contact directly to confirm availability</p>
+        <p className="text-[11px] uppercase tracking-[0.22em] text-ink/45">{uiLanguage === 'vi' ? 'Tim gara' : 'Find a garage'}</p>
+        <p className="mt-1 font-display text-[1.6rem] leading-tight">{uiLanguage === 'vi' ? 'Gara Tasco gan ban' : 'Nearby Tasco garages'}</p>
+        <p className="mt-1 text-sm text-ink/60">{uiLanguage === 'vi' ? 'Lien he truc tiep de xac nhan lich trong' : 'Contact directly to confirm availability'}</p>
       </div>
       <div className="space-y-3">
         {garages.map((garage, i) => (
@@ -60,7 +62,7 @@ export function NearbyGaragesCard() {
                   className="inline-flex items-center gap-1.5 rounded-full border border-ink/12 bg-white px-3 py-1.5 text-xs font-semibold text-ink hover:bg-sand"
                 >
                   <ExternalLink className="h-3 w-3" />
-                  Directions
+                  {uiLanguage === 'vi' ? 'Chi duong' : 'Directions'}
                 </a>
               ) : null}
             </div>

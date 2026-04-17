@@ -7,12 +7,13 @@ import { useSessionStore } from '../../../store/session-store'
 export function useDashboardData() {
   const userId = useSessionStore((state) => state.user.id)
   const vehicleId = useSessionStore((state) => state.activeVehicleId)
+  const uiLanguage = useSessionStore((state) => state.uiLanguage)
   const cachedDailyBrief = useSessionStore((state) => state.cachedDailyBrief)
   const cachedDailyBriefKey = useSessionStore((state) => state.cachedDailyBriefKey)
   const setCachedDailyBrief = useSessionStore((state) => state.setCachedDailyBrief)
 
   const dateKey = new Date().toISOString().slice(0, 10)
-  const briefCacheKey = `${userId}:${vehicleId}:${dateKey}`
+  const briefCacheKey = `${userId}:${vehicleId}:${dateKey}:${uiLanguage}`
 
   const vehicleQuery = useQuery({
     queryKey: queryKeys.vehicle(userId),
@@ -20,7 +21,7 @@ export function useDashboardData() {
   })
 
   const briefQuery = useQuery({
-    queryKey: queryKeys.dailyBrief(userId, vehicleId, dateKey),
+    queryKey: queryKeys.dailyBrief(userId, vehicleId, `${dateKey}:${uiLanguage}`),
     queryFn: async () => {
       if (cachedDailyBrief && cachedDailyBriefKey === briefCacheKey) {
         return cachedDailyBrief

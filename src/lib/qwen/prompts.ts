@@ -5,6 +5,7 @@ import type {
   ETCWallet,
   TelemetryReading,
 } from '../../types/domain'
+import type { Language } from '../i18n'
 
 export function buildVehicleHealthPrompt(
   vehicle: Vehicle,
@@ -58,6 +59,7 @@ export function buildAssistantSystemPrompt(
   etcWallet: ETCWallet | null,
   simulatedDate: string,
   location: string,
+  uiLanguage: Language = 'en',
 ): string {
   const healthContext = health
     ? `Current Health Score: ${health.score}/100 (${health.status})
@@ -96,7 +98,12 @@ INSTRUCTIONS:
 - Reference the user's specific vehicle data when relevant
 - If the user writes in Vietnamese, respond in Vietnamese
 - If the user writes in English, respond in English
+- If user language is ambiguous, prefer ${uiLanguage === 'vi' ? 'Vietnamese' : 'English'}
 - Be concise but thorough
+- Use clean markdown formatting:
+  - short paragraphs (1-3 sentences)
+  - numbered or bullet lists for multi-step guidance
+  - avoid putting all points into one long paragraph
 - When recommending services, suggest realistic VND price ranges
 - If you don't know something specific, say so honestly
 - You can help with: maintenance advice, service booking, garage recommendations, cost estimates, warning light explanations, and general car care`
@@ -109,6 +116,7 @@ export function buildMorningBriefPrompt(
   health: VehicleHealth | null,
   etcWallet: ETCWallet | null,
   nextServiceDue: string | null,
+  preferredLanguage: Language = 'en',
 ): string {
   return `You are writing a personalized morning brief for a car owner. Make it warm, practical, and actionable.
 
@@ -142,7 +150,10 @@ Return a JSON object matching this exact schema:
   ]
 }
 
-Generate 2-3 alerts and 2-3 suggested actions. Make the alerts specific to the vehicle's current state.`
+Generate 2-3 alerts and 2-3 suggested actions. Make the alerts specific to the vehicle's current state.
+
+Language rule:
+- Write all greeting, summary, alerts, and suggested action labels in ${preferredLanguage === 'vi' ? 'Vietnamese' : 'English'}.`
 }
 
 export function buildWarningLightPrompt(): string {
