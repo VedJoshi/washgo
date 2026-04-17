@@ -170,9 +170,10 @@ export const assistantService: AssistantService = {
 
     const liveEntries = useSessionStore.getState().carHealthRecordEntries
     const liveHealthRecord = { ...carHealthRecord, entries: liveEntries }
+    const liveHealth = useSessionStore.getState().liveVehicleHealth ?? vehicleHealth
     const systemPrompt = buildAssistantSystemPrompt(
       activeVehicle,
-      vehicleHealth,
+      liveHealth,
       liveHealthRecord,
       null,
       new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
@@ -235,9 +236,10 @@ export async function sendMessageStreaming(
 
   const liveEntries = useSessionStore.getState().carHealthRecordEntries
   const liveHealthRecord = { ...carHealthRecord, entries: liveEntries }
+  const liveHealth = useSessionStore.getState().liveVehicleHealth ?? vehicleHealth
   const systemPrompt = buildAssistantSystemPrompt(
     activeVehicle,
-    vehicleHealth,
+    liveHealth,
     liveHealthRecord,
     null,
     new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
