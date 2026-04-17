@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { CarFront, Camera, LogOut, MessageSquareText, Wrench } from 'lucide-react'
+import { CarFront, Camera, ClipboardList, LogOut, MessageSquareText, Wrench } from 'lucide-react'
 import { useAuth } from '../../features/auth/auth-provider'
 import { cn } from '../../lib/utils/cn'
 import { useSessionStore } from '../../store/session-store'
@@ -9,6 +9,7 @@ const navItems = [
   { to: '/', label: 'Dashboard', icon: CarFront },
   { to: '/vehicle', label: 'Vehicle', icon: Wrench },
   { to: '/lens', label: 'Lens', icon: Camera },
+  { to: '/history', label: 'History', icon: ClipboardList },
   { to: '/assistant', label: 'Assistant', icon: MessageSquareText },
 ]
 
