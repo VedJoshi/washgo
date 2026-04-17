@@ -190,6 +190,23 @@ export function buildServiceBookExtractionPrompt(): string {
 Extract as many entries as you can read. Set confidence based on image clarity. Use "lens_extracted" as the source for all entries.`
 }
 
+export function buildValuationInsightPrompt(
+  entryCount: number,
+  totalSpentVnd: number,
+  latestServiceDate: string,
+  vehicleMake: string,
+  vehicleModel: string,
+): string {
+  return `You are an automotive advisor. A ${vehicleMake} ${vehicleModel} owner has ${entryCount} verified service records totalling ${totalSpentVnd.toLocaleString()} VND, with the most recent service on ${latestServiceDate}.
+
+Return a JSON object with a single field:
+{
+  "insight": string (one plain sentence about how this service record affects resale value — reference Tasco's service network where relevant, no other brand references)
+}
+
+Keep the insight positive, factual, and under 25 words.`
+}
+
 export function buildTelemetryAnalysisPrompt(
   vehicle: Vehicle,
   healthRecord: CarHealthRecord,
