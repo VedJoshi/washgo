@@ -26,12 +26,21 @@ You can also copy from `.env.example`.
 
 ```bash
 npm install
-npm run dev
+npm run dev:local
 ```
 
-Then open the Vite URL in your browser, sign in with a magic link, and the app will route into the existing dashboard flow.
+Then open [http://localhost:5173](http://localhost:5173), sign in with a magic link, and test all flows locally (including Lens).
 
-## Deploy to Vercel
+Optional production-like local check:
+
+```bash
+npm run build
+npm run preview:local
+```
+
+Open [http://localhost:4173](http://localhost:4173).
+
+## Deploy to Vercel (Optional)
 
 This is a standard **Vite static frontend** deployment. No custom backend, serverless API, or service-role key is needed.
 

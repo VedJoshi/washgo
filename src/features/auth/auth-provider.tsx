@@ -58,10 +58,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
           return { errorMessage: 'Missing Supabase configuration.' }
         }
 
+        const explicitRedirect = import.meta.env.VITE_AUTH_REDIRECT_URL as string | undefined
+        const emailRedirectTo = explicitRedirect || (import.meta.env.DEV ? 'http://localhost:5173' : window.location.origin)
+
         const { error } = await supabase.auth.signInWithOtp({
           email,
           options: {
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo,
           },
         })
 
