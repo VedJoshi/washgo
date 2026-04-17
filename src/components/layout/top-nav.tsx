@@ -49,7 +49,7 @@ export function TopNav() {
                 to={to}
                 className={({ isActive }) =>
                   cn(
-                    'inline-flex min-w-[104px] items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition',
+                    'inline-flex items-center justify-center gap-2 rounded-full px-3 py-2.5 text-sm font-semibold transition sm:min-w-[104px] sm:px-4',
                     isActive
                       ? 'bg-ink text-white shadow-[0_10px_20px_rgba(20,33,61,0.18)]'
                       : 'text-ink/70 hover:bg-sand hover:text-ink',
@@ -57,7 +57,7 @@ export function TopNav() {
                 }
               >
                 <Icon className="h-4 w-4" />
-                {label}
+                <span className="hidden sm:inline">{label}</span>
               </NavLink>
             ))}
           </nav>
