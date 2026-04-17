@@ -15,6 +15,17 @@ VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 
 You can also copy from `.env.example`.
 
+If you want full Qwen features (assistant, lens, and voice STT), also add:
+
+```bash
+VITE_QWEN_API_KEY=sk-...
+VITE_QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+VITE_QWEN_TEXT_MODEL=qwen-max
+VITE_QWEN_FAST_MODEL=qwen-plus
+VITE_QWEN_VISION_MODEL=qwen-vl-max
+VITE_QWEN_STT_MODEL=qwen3-asr-flash
+```
+
 ### Recommended Supabase settings
 
 - Enable **Email** provider in Supabase Auth
@@ -57,6 +68,12 @@ Add these in Vercel for **Production** and **Preview**:
 ```bash
 VITE_SUPABASE_URL=https://your-project-ref.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+VITE_QWEN_API_KEY=sk-...
+VITE_QWEN_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+VITE_QWEN_TEXT_MODEL=qwen-max
+VITE_QWEN_FAST_MODEL=qwen-plus
+VITE_QWEN_VISION_MODEL=qwen-vl-max
+VITE_QWEN_STT_MODEL=qwen3-asr-flash
 ```
 
 ### Supabase Auth redirect setup
