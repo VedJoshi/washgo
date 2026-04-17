@@ -246,3 +246,42 @@ Return a JSON object matching this exact schema:
 
 Provide 1-3 predictions, 0-3 alerts based on readings, and recommend a booking CTA only if something is concerning. Use realistic thresholds (battery < 12.2V is concerning, tyre pressure outside 28-35 PSI for a Vios is flagged, etc.).`
 }
+
+export function buildBookingBriefPrompt(
+  recommendation: {
+    title: string
+    issue: string
+    urgency: string
+    estimatedPriceRange: string
+    recommendedWithinDays: number
+    category: string
+  },
+  vehicle: { make: string; model: string; currentOdometerKm: number },
+  healthScore: number,
+  slots: Array<{ id: string; providerName: string; slotLabel: string; priceEstimate: string; distanceKm: number }>,
+): string {
+  const slotLines = slots
+    .map((s) => `- id: "${s.id}", "${s.slotLabel}" at ${s.providerName}, ${s.priceEstimate}, ${s.distanceKm} km away`)
+    .join('\n')
+
+  return `You are a car service advisor for a Vietnamese car owner.
+
+Vehicle: ${vehicle.make} ${vehicle.model} at ${vehicle.currentOdometerKm.toLocaleString()} km
+Health score: ${healthScore}/100
+Service needed: ${recommendation.title} (urgency: ${recommendation.urgency})
+Issue: ${recommendation.issue}
+Estimated price: ${recommendation.estimatedPriceRange}
+Should be done within: ${recommendation.recommendedWithinDays} days
+
+Available booking slots:
+${slotLines}
+
+Return a JSON object with exactly these five fields:
+{
+  "whyNow": "one sentence explaining urgency specific to this vehicle's mileage and issue",
+  "mechanicTip": "one sentence on what to tell or ask the mechanic",
+  "recommendedSlotId": "the id string of the better slot",
+  "slotReason": "one sentence explaining why that slot is better for this service",
+  "estimatedDuration": "estimated service time e.g. '30–45 minutes'"
+}`
+}
