@@ -8,7 +8,7 @@ export function QuickActions({ actions }: { actions: QuickAction[] }) {
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="font-display text-2xl">Today's shortcuts</p>
-          <p className="mt-1 text-sm text-ink/65">Keep the demo moving with one clear action per tap.</p>
+          <p className="mt-1 text-sm text-ink/65">Jump to the most relevant action for your car today.</p>
         </div>
       </div>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">

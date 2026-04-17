@@ -7,6 +7,7 @@ import { BookingConfirmation } from '../features/booking/components/booking-conf
 import { BookingOptionsList } from '../features/booking/components/booking-options-list'
 import { useBookingFlow } from '../features/booking/hooks/use-booking-flow'
 import { ServiceMap } from '../features/map/components/service-map'
+import { garages } from '../lib/mocks/garages'
 import { useSessionStore } from '../store/session-store'
 import type { GarageEntry } from '../types/domain'
 
@@ -97,7 +98,7 @@ export function BookingPage() {
 
       {activeTab === 'map' && selectedGarageId ? (
         <p className="text-sm text-ink/65">
-          Selected garage from map: <span className="font-semibold text-ink">{selectedGarageId}</span>
+          Selected from map: <span className="font-semibold text-ink">{garages.find((g) => g.id === selectedGarageId)?.name ?? selectedGarageId}</span>
         </p>
       ) : null}
     </div>
