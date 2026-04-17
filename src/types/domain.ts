@@ -204,3 +204,11 @@ export type ToolResult = {
   name: string
   content: string
 }
+
+export type NearbyGarage = {
+  name: string
+  address: string
+  phone?: string
+  rating?: number
+  mapsUrl?: string
+}
