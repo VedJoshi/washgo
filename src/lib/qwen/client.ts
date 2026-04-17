@@ -40,13 +40,20 @@ interface QwenChatOptions {
   maxTokens?: number
 }
 
-function buildHeaders(): HeadersInit {
+function buildAuthHeaders(): HeadersInit {
   if (!API_KEY) {
     throw new Error('VITE_QWEN_API_KEY is not set')
   }
   return {
-    'Content-Type': 'application/json',
     Authorization: `Bearer ${API_KEY}`,
+  }
+}
+
+function buildHeaders(): HeadersInit {
+  const authHeaders = buildAuthHeaders()
+  return {
+    ...authHeaders,
+    'Content-Type': 'application/json',
   }
 }
 
@@ -232,4 +239,72 @@ export async function qwenVision(imageDataUrl: string, prompt: string): Promise<
   }
 
   return response.content
+}
+
+export async function qwenAudioTranscription(
+  audioBlob: Blob,
+  options: { model: string; language?: 'en' | 'vi' },
+): Promise<unknown> {
+  const formData = new FormData()
+  const extension = audioBlob.type.includes('mp4') ? 'm4a' : 'webm'
+  formData.append('file', audioBlob, `voice-input.${extension}`)
+  formData.append('model', options.model)
+  if (options.language) {
+    formData.append('language', options.language)
+  }
+
+  const response = await fetch(`${BASE_URL}/audio/transcriptions`, {
+    method: 'POST',
+    headers: buildAuthHeaders(),
+    body: formData,
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Qwen audio transcription error (${response.status}): ${errorText}`)
+  }
+
+  return response.json()
+}
+
+export async function qwenAudioTranscriptionViaChat(
+  audioDataUrl: string,
+  options: { model: string; language?: 'en' | 'vi' },
+): Promise<unknown> {
+  const body: Record<string, unknown> = {
+    model: options.model,
+    messages: [
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'input_audio',
+            input_audio: {
+              data: audioDataUrl,
+            },
+          },
+        ],
+      },
+    ],
+    stream: false,
+  }
+
+  if (options.language) {
+    body.asr_options = {
+      language: options.language,
+    }
+  }
+
+  const response = await fetch(`${BASE_URL}/chat/completions`, {
+    method: 'POST',
+    headers: buildHeaders(),
+    body: JSON.stringify(body),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Qwen ASR via chat error (${response.status}): ${errorText}`)
+  }
+
+  return response.json()
 }
