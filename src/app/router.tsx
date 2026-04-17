@@ -6,6 +6,7 @@ import { AssistantPage } from '../pages/assistant-page'
 import { AuthPage } from '../pages/auth-page'
 import { BookingPage } from '../pages/booking-page'
 import { DashboardPage } from '../pages/dashboard-page'
+import { LensRoutePage } from '../pages/lens-page'
 import { VehiclePage } from '../pages/vehicle-page'
 
 export const router = createBrowserRouter([
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
           { path: 'vehicle', element: <VehiclePage /> },
           { path: 'booking', element: <BookingPage /> },
           { path: 'assistant', element: <AssistantPage /> },
+          { path: 'lens', element: <LensRoutePage /> },
         ],
       },
     ],

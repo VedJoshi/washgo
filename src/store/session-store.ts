@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { currentUser } from '../lib/mocks/user'
-import type { DailyBrief } from '../types/domain'
+import { carHealthRecord } from '../lib/mocks/car-health-record'
+import type { DailyBrief, ServiceRecordEntry } from '../types/domain'
 
 type SessionState = {
   user: typeof currentUser
@@ -12,6 +13,7 @@ type SessionState = {
   selectedGarageId?: string
   pendingAssistantPrompt?: string
   serviceFinderServiceType: 'car_wash' | 'car_repair'
+  carHealthRecordEntries: ServiceRecordEntry[]
   setCachedDailyBrief: (cacheKey: string, brief: DailyBrief) => void
   clearCachedDailyBrief: () => void
   setSelectedRecommendationId: (selectedRecommendationId?: string) => void
@@ -20,6 +22,7 @@ type SessionState = {
   setPendingAssistantPrompt: (pendingAssistantPrompt?: string) => void
   clearPendingAssistantPrompt: () => void
   setServiceFinderServiceType: (serviceFinderServiceType: 'car_wash' | 'car_repair') => void
+  appendCarHealthRecordEntries: (entries: ServiceRecordEntry[]) => void
 }
 
 export const useSessionStore = create<SessionState>((set) => ({
@@ -32,6 +35,7 @@ export const useSessionStore = create<SessionState>((set) => ({
   selectedGarageId: undefined,
   pendingAssistantPrompt: undefined,
   serviceFinderServiceType: 'car_repair',
+  carHealthRecordEntries: carHealthRecord.entries,
   setCachedDailyBrief: (cacheKey, brief) =>
     set({
       cachedDailyBriefKey: cacheKey,
@@ -45,4 +49,19 @@ export const useSessionStore = create<SessionState>((set) => ({
   setPendingAssistantPrompt: (pendingAssistantPrompt) => set({ pendingAssistantPrompt }),
   clearPendingAssistantPrompt: () => set({ pendingAssistantPrompt: undefined }),
   setServiceFinderServiceType: (serviceFinderServiceType) => set({ serviceFinderServiceType }),
+  appendCarHealthRecordEntries: (entries) =>
+    set((state) => ({
+      carHealthRecordEntries: [
+        ...state.carHealthRecordEntries,
+        ...entries.filter(
+          (entry) =>
+            !state.carHealthRecordEntries.some(
+              (existing) =>
+                existing.date === entry.date &&
+                existing.serviceType === entry.serviceType &&
+                existing.garageName === entry.garageName,
+            ),
+        ),
+      ],
+    })),
 }))

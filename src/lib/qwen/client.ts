@@ -202,10 +202,7 @@ export async function* qwenChatStream(
   }
 }
 
-export async function qwenVision(
-  imageBase64: string,
-  prompt: string,
-): Promise<string> {
+export async function qwenVision(imageDataUrl: string, prompt: string): Promise<string> {
   const model = import.meta.env.VITE_QWEN_VISION_MODEL || 'qwen-vl-max'
 
   const messages: ChatMessage[] = [
@@ -214,7 +211,7 @@ export async function qwenVision(
       content: [
         {
           type: 'image_url',
-          image_url: { url: `data:image/jpeg;base64,${imageBase64}` },
+          image_url: { url: imageDataUrl },
         },
         {
           type: 'text',
