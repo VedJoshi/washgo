@@ -11,7 +11,6 @@ export function DailyBriefCard({ brief, vehicle }: { brief: DailyBrief; vehicle:
           <Badge tone="neutral">Daily driver briefing</Badge>
           <h1 className="mt-4 max-w-2xl font-display text-[2.2rem] leading-[0.98] tracking-tight sm:text-[3.4rem]">
             {brief.greeting}
-            <span className="block text-white/85">{vehicle.nickname} is ready for today.</span>
           </h1>
           <p className="mt-4 max-w-xl text-sm leading-6 text-white/80 sm:text-[15px]">{brief.summary}</p>
           <div className="mt-6 flex flex-wrap gap-3 text-xs uppercase tracking-[0.18em] text-white/65">

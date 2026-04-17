@@ -71,7 +71,7 @@ export function BookingOptionsList({
             <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Primary action</p>
             <p className="mt-2 font-display text-[2rem] leading-tight">Confirm the selected booking</p>
             <p className="mt-2 text-sm leading-6 text-white/70">
-              Keep the final step simple and explicit so the demo lands as a complete user journey.
+              Your selected slot will be held for 15 minutes. Confirm to lock it in.
             </p>
           </div>
           <Button

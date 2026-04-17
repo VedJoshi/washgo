@@ -6,6 +6,7 @@ import { carHealthRecord } from '../../mocks/car-health-record'
 import { delay } from '../../utils/delay'
 import { qwenChat } from '../../qwen/client'
 import { buildMorningBriefPrompt } from '../../qwen/prompts'
+import { useSessionStore } from '../../../store/session-store'
 import type { DailyBrief, DriverAlert, QuickAction } from '../../../types/domain'
 import type { DashboardService } from '../services/dashboard-service'
 
@@ -66,11 +67,12 @@ async function fetchMorningBriefFromQwen(): Promise<DailyBrief> {
     ? `${carHealthRecord.nextDueDate} (${remainingKm.toLocaleString()} km remaining)`
     : null
 
+  const liveHealth = useSessionStore.getState().liveVehicleHealth ?? vehicleHealth
   const prompt = buildMorningBriefPrompt(
     dateLabel,
     dayOfWeek,
     activeVehicle,
-    vehicleHealth,
+    liveHealth,
     etcWallet,
     nextServiceDue,
   )

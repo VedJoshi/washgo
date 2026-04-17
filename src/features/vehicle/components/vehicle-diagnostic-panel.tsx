@@ -55,7 +55,7 @@ export function VehicleDiagnosticPanel({ vehicle, health }: { vehicle: Vehicle; 
             <Badge tone={statusTone(health.status)}>{health.status.replace('_', ' ')}</Badge>
           </div>
           <p className="mt-3 max-w-xl text-sm leading-6 text-white/74">
-            Battery is the main watch item today. The vehicle is still usable, but the current driving pattern is creating more strain than normal and the next service window is getting closer.
+            {health.issues.length > 0 ? health.issues[0] : 'All systems are within normal range.'}
           </p>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">

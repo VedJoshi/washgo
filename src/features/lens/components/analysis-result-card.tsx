@@ -56,7 +56,7 @@ export function AnalysisResultCard(props: AnalysisResultCardProps) {
         <div className="space-y-3">
           {result.entries.slice(0, 3).map((entry) => (
             <div key={entry.id} className="rounded-[18px] border border-ink/10 bg-white/75 p-4">
-              <p className="text-sm font-semibold text-ink">{entry.serviceType.replace('_', ' ')}</p>
+              <p className="text-sm font-semibold text-ink">{entry.serviceType.split('_').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</p>
               <p className="mt-1 text-sm text-ink/70">{entry.date} - {entry.garageName}</p>
               <p className="mt-1 text-sm text-ink/62">
                 {entry.costVnd > 0 ? `${entry.costVnd.toLocaleString('vi-VN')} VND` : 'Cost unknown'}

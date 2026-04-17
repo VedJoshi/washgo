@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { currentUser } from '../lib/mocks/user'
 import { carHealthRecord } from '../lib/mocks/car-health-record'
-import type { DailyBrief, ServiceRecordEntry } from '../types/domain'
+import type { DailyBrief, ServiceRecordEntry, VehicleHealth } from '../types/domain'
 
 type SessionState = {
   user: typeof currentUser
@@ -14,6 +14,7 @@ type SessionState = {
   pendingAssistantPrompt?: string
   serviceFinderServiceType: 'car_wash' | 'car_repair'
   carHealthRecordEntries: ServiceRecordEntry[]
+  liveVehicleHealth: VehicleHealth | null
   setCachedDailyBrief: (cacheKey: string, brief: DailyBrief) => void
   clearCachedDailyBrief: () => void
   setSelectedRecommendationId: (selectedRecommendationId?: string) => void
@@ -23,6 +24,7 @@ type SessionState = {
   clearPendingAssistantPrompt: () => void
   setServiceFinderServiceType: (serviceFinderServiceType: 'car_wash' | 'car_repair') => void
   appendCarHealthRecordEntries: (entries: ServiceRecordEntry[]) => void
+  setLiveVehicleHealth: (health: VehicleHealth) => void
 }
 
 export const useSessionStore = create<SessionState>((set) => ({
@@ -36,11 +38,9 @@ export const useSessionStore = create<SessionState>((set) => ({
   pendingAssistantPrompt: undefined,
   serviceFinderServiceType: 'car_repair',
   carHealthRecordEntries: carHealthRecord.entries,
+  liveVehicleHealth: null,
   setCachedDailyBrief: (cacheKey, brief) =>
-    set({
-      cachedDailyBriefKey: cacheKey,
-      cachedDailyBrief: brief,
-    }),
+    set({ cachedDailyBriefKey: cacheKey, cachedDailyBrief: brief }),
   clearCachedDailyBrief: () => set({ cachedDailyBriefKey: undefined, cachedDailyBrief: undefined }),
   setSelectedRecommendationId: (selectedRecommendationId) =>
     set({ selectedRecommendationId, selectedBookingOptionId: undefined }),
@@ -64,4 +64,5 @@ export const useSessionStore = create<SessionState>((set) => ({
         ),
       ],
     })),
+  setLiveVehicleHealth: (health) => set({ liveVehicleHealth: health }),
 }))

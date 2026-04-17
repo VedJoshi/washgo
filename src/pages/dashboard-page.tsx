@@ -36,9 +36,9 @@ export function DashboardPage() {
       <div className="grid gap-5 lg:grid-cols-[1.05fr_0.95fr]">
         <Card className="p-5 sm:p-6">
           <p className="text-[11px] uppercase tracking-[0.18em] text-ink/45">Why this matters today</p>
-          <p className="mt-3 font-display text-[2rem] leading-tight">Battery is the one insight to act on now</p>
+          <p className="mt-3 font-display text-[2rem] leading-tight">{primaryRecommendation?.title ?? 'Your car is in good shape'}</p>
           <p className="mt-3 max-w-xl text-sm leading-6 text-ink/68">
-            The car is still fine for normal driving, but short urban trips are creating a pattern that makes battery reliability the most likely friction point. That is why the assistant is prioritizing a small diagnostic before anything else.
+            {primaryRecommendation?.description ?? 'No urgent actions needed. Keep up with scheduled maintenance to stay ahead of issues.'}
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link

@@ -131,7 +131,7 @@ export function LensPage() {
       <Card className="overflow-hidden border-none bg-[linear-gradient(135deg,_rgba(12,36,58,1)_0%,_rgba(21,57,90,1)_52%,_rgba(245,125,41,0.94)_100%)] text-white">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-white/62">Phase 5 Lens MVP</p>
+            <p className="text-[11px] uppercase tracking-[0.22em] text-white/62">Dashboard Lens</p>
             <p className="mt-2 font-display text-[2.2rem] leading-tight sm:text-[2.8rem]">Visual diagnostics and record extraction</p>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/82">
               Upload a dashboard warning light or service document to get structured AI output with direct assistant and booking actions.

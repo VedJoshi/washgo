@@ -13,13 +13,15 @@ const statusCards = (
   },
   {
     label: 'Primary watch',
-    value: 'Battery',
-    hint: 'Recent city-heavy usage is increasing battery strain',
+    value: health.recommendations[0]?.category
+      ? health.recommendations[0].category.charAt(0).toUpperCase() + health.recommendations[0].category.slice(1)
+      : 'All clear',
+    hint: health.recommendations[0]?.issue ?? 'No urgent issues detected',
   },
   {
-    label: 'Drive pattern',
-    value: 'City-heavy',
-    hint: `${health.issues.length} systems worth checking before the weekend`,
+    label: 'Health status',
+    value: health.status === 'needs_service' ? 'Needs service' : health.status === 'watch' ? 'Watch' : 'Good',
+    hint: `${health.issues.length} ${health.issues.length === 1 ? 'issue' : 'issues'} flagged by Qwen`,
   },
 ]
 

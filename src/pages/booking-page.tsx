@@ -5,8 +5,12 @@ import { Button } from '../components/ui/button'
 import { Spinner } from '../components/ui/spinner'
 import { BookingConfirmation } from '../features/booking/components/booking-confirmation'
 import { BookingOptionsList } from '../features/booking/components/booking-options-list'
+import { BookingServiceBriefCard } from '../features/booking/components/booking-service-brief-card'
+import { NearbyGaragesCard } from '../features/booking/components/nearby-garages-card'
 import { useBookingFlow } from '../features/booking/hooks/use-booking-flow'
 import { ServiceMap } from '../features/map/components/service-map'
+import { garages } from '../lib/mocks/garages'
+import { vehicleHealth as mockVehicleHealth } from '../lib/mocks/recommendations'
 import { useSessionStore } from '../store/session-store'
 import type { GarageEntry } from '../types/domain'
 
@@ -18,6 +22,12 @@ export function BookingPage() {
   const setSelectedGarageId = useSessionStore((state) => state.setSelectedGarageId)
   const setPendingAssistantPrompt = useSessionStore((state) => state.setPendingAssistantPrompt)
   const setServiceFinderServiceType = useSessionStore((state) => state.setServiceFinderServiceType)
+  const liveVehicleHealth = useSessionStore((state) => state.liveVehicleHealth)
+  const selectedRecommendationId = useSessionStore((state) => state.selectedRecommendationId)
+
+  const healthRecs = liveVehicleHealth?.recommendations ?? mockVehicleHealth.recommendations
+  const currentRecommendation =
+    healthRecs.find((r) => r.id === selectedRecommendationId) ?? healthRecs[0]
 
   const {
     bookingOptions,
@@ -86,18 +96,25 @@ export function BookingPage() {
       {confirmation ? (
         <BookingConfirmation confirmation={confirmation} />
       ) : activeTab === 'slots' ? (
-        <BookingOptionsList
-          bookingOptions={bookingOptions}
-          isConfirming={isConfirming}
-          onConfirm={confirmBooking}
-          onSelect={selectOption}
-          selectedBookingOptionId={selectedBookingOptionId}
-        />
+        <>
+          <BookingServiceBriefCard recommendation={currentRecommendation} />
+          <BookingOptionsList
+            bookingOptions={bookingOptions}
+            isConfirming={isConfirming}
+            onConfirm={confirmBooking}
+            onSelect={selectOption}
+            selectedBookingOptionId={selectedBookingOptionId}
+          />
+          <NearbyGaragesCard />
+        </>
       ) : null}
 
       {activeTab === 'map' && selectedGarageId ? (
         <p className="text-sm text-ink/65">
-          Selected garage from map: <span className="font-semibold text-ink">{selectedGarageId}</span>
+          Selected from map:{' '}
+          <span className="font-semibold text-ink">
+            {garages.find((g) => g.id === selectedGarageId)?.name ?? selectedGarageId}
+          </span>
         </p>
       ) : null}
     </div>

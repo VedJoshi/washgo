@@ -9,6 +9,7 @@ import { allTools, dispatchToolCall, getToolLabel } from '../../qwen/tools'
 import type { AssistantService } from '../services/assistant-service'
 import type { AssistantReply, ChatMessage } from '../../../types/domain'
 import type { ChatMessage as QwenChatMessage } from '../../qwen/client'
+import { useSessionStore } from '../../../store/session-store'
 
 function generateSuggestions(content: string): string[] {
   const lower = content.toLowerCase()
@@ -167,10 +168,13 @@ export const assistantService: AssistantService = {
       }
     }
 
+    const liveEntries = useSessionStore.getState().carHealthRecordEntries
+    const liveHealthRecord = { ...carHealthRecord, entries: liveEntries }
+    const liveHealth = useSessionStore.getState().liveVehicleHealth ?? vehicleHealth
     const systemPrompt = buildAssistantSystemPrompt(
       activeVehicle,
-      vehicleHealth,
-      carHealthRecord,
+      liveHealth,
+      liveHealthRecord,
       null,
       new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
       'Ho Chi Minh City, District 1',
@@ -230,10 +234,13 @@ export async function sendMessageStreaming(
     }
   }
 
+  const liveEntries = useSessionStore.getState().carHealthRecordEntries
+  const liveHealthRecord = { ...carHealthRecord, entries: liveEntries }
+  const liveHealth = useSessionStore.getState().liveVehicleHealth ?? vehicleHealth
   const systemPrompt = buildAssistantSystemPrompt(
     activeVehicle,
-    vehicleHealth,
-    carHealthRecord,
+    liveHealth,
+    liveHealthRecord,
     null,
     new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
     'Ho Chi Minh City, District 1',
